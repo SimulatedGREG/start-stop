@@ -2,17 +2,21 @@
   <div>
     <header class="columns">
       <div class="column col-6">
-        <button class="btn btn-lg btn-primary" :disabled="isRecording" @click="beginRecording">Start Timer</button>
+        <!--<button class="btn btn-lg btn-primary" :disabled="isRecording" @click="beginRecording">Start Timer</button>-->
+        <label class="form-label">Start Time</label>
+        <input type="time" class="form-input input-lg" v-model="startTime">
       </div>
       <div class="column col-6">
-        <button class="btn btn-lg btn-primary" :disabled="!isRecording" @click="endRecording">Stop Timer</button>
+        <!--<button class="btn btn-lg btn-primary" :disabled="!isRecording" @click="endRecording">Stop Timer</button>-->
+        <label class="form-label">End Time</label>
+        <input type="time" class="form-input input-lg" v-model="endTime">
       </div>
 
-      <div class="column col-12">
+      <!--<div class="column col-12">
         <h5 class="text-center">
           {{ rep | human }}&nbsp;<span v-show="isRecording">{{ timeDiff }}</span>
         </h5>
-      </div>
+      </div>-->
     </header>
 
     <main>
@@ -32,9 +36,9 @@
     created () {
       this.now = moment()
 
-      setInterval(() => {
-        this.now = moment()
-      }, 1000)
+      // setInterval(() => {
+      //   this.now = moment()
+      // }, 1000)
 
       if (window.localStorage.getItem('startTime') && window.localStorage.getItem('endTime')) {
         this.startTime = JSON.parse(window.localStorage.getItem('startTime'))
@@ -53,24 +57,29 @@
       }
     },
     computed: {
-      timeDiff () {
-        let diff = Math.floor(moment(this.now).diff(this.startTime) / 1000)
-        return diff > 60
-          ? Math.floor(diff / 60) + 'm ' + (diff % 60) + 's'
-          : diff + 's'
-      },
+      // timeDiff () {
+      //   let diff = Math.floor(moment(this.now).diff(moment(this.startTime)) / 1000)
+      //   return diff > 60
+      //     ? Math.floor(diff / 60) + 'm ' + (diff % 60) + 's'
+      //     : diff + 's'
+      // },
       rep () {
+        let start = moment().hour(this.startTime.split(':')[0]).minute(this.startTime.split(':')[1])
+        let end = moment().hour(this.endTime.split(':')[0]).minute(this.endTime.split(':')[1])
+
         return this.isRecording
           ? 'Recording...'
-          : moment(this.endTime).diff(this.startTime)
+          : moment(end).diff(moment(start))
       },
       generation () {
         if (this.isRecording) return []
 
         let times = []
 
+        let end = moment().hour(this.endTime.split(':')[0]).minute(this.endTime.split(':')[1])
+
         for (let i = 1; i < 51; i++) {
-          let iteration = moment(this.endTime).add(moment(this.rep) * i)
+          let iteration = moment(end).add(moment(this.rep) * i)
 
           times.push({
             raw: iteration,
